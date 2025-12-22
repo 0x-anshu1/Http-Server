@@ -62,19 +62,64 @@ void tcpserver::loop(){
 	}
 
 	ssize_t i = recv(lsock,m_buff,sizeof(m_buff),0);
-	if(i<=0){
+	if(i<0){
 		perror("recv");
 		cerr<<"Error: Recv Problem"<<endl;
 		exit(EXIT_FAILURE);
 	}
+	m_buff[i]='\0';
 
 	m_msg = process(m_buff);
-	i = send(lsock,m_msg.c_str(),m_msg.size(),0);
+	if(m_msg == ""){
+		perror("Request");
+		cerr<<"Error 400"<<endl;
+	}
+	
+	 i = send(lsock,m_msg.c_str(),m_msg.size(),0);
 	if(i<=0){
 		perror("send");
 		cerr<<"Error: Send Problem"<<endl;
 		exit(EXIT_FAILURE);
 	}
 
+	cout<<m_buff<<endl;
+
+	memset(m_buff,0,sizeof(m_buff));
 	close(lsock);
+}
+
+std::string tcpserver::process(const std::string &msg){
+	std::string method="",path="";
+	int i=0;
+	while(msg[i]!=' '){
+		method+=msg[i];
+		++i;
+	}
+	//cout<<"Method: "<<method<<endl;
+	if(method!="GET"){
+		perror("METHOD");
+		cerr<<"Error:  Method is not GET."<<endl;
+	}
+
+	i+=1;
+	while(msg[i]!=' '){
+		path+=msg[i];
+		++i;
+	}
+	//cout<<"Path: "<<path<<endl;
+	if(m_paths.find(path) == m_paths.end()){
+		perror("PATH");
+		cerr<<"Invalid path."<<endl;
+		return "";
+	}
+	return GET(path);
+}
+
+std::string tcpserver::GET(const std::string &msg){
+	ifstream in("path_file/index.html");
+	std::string s;
+	getline(in,s);
+	cout<<"file-content: "<<s<<endl;
+	//in.close();
+	return s;
 }
