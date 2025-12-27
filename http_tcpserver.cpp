@@ -1,5 +1,7 @@
 #include<iostream>
 #include<string>
+#include<sstream>
+#include<cstring>
 
 #include"http_tcpserver.h"
 
@@ -68,14 +70,20 @@ void tcpserver::loop(){
 		exit(EXIT_FAILURE);
 	}
 	m_buff[i]='\0';
-
-	m_msg = process(m_buff);
-	if(m_msg == ""){
+	
+	std::string msg=process(m_buff);
+	if(msg == ""){
 		perror("Request");
 		cerr<<"Error 400"<<endl;
 	}
 	
-	 i = send(lsock,m_msg.c_str(),m_msg.size(),0);
+	m_msg="HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: ";
+	size_t size = msg.size();
+	msg = "\r\n\r\n"+msg;
+	msg = std::to_string(size)+msg;
+	m_msg+=msg;
+	std::cout<<m_msg<<std::endl;	
+	i = send(lsock,m_msg.c_str(),m_msg.size(),0);
 	if(i<=0){
 		perror("send");
 		cerr<<"Error: Send Problem"<<endl;
@@ -117,9 +125,10 @@ std::string tcpserver::process(const std::string &msg){
 
 std::string tcpserver::GET(const std::string &msg){
 	ifstream in("path_file/index.html");
-	std::string s;
-	getline(in,s);
-	cout<<"file-content: "<<s<<endl;
-	//in.close();
-	return s;
+	std::stringstream s;
+	s<<in.rdbuf();
+	std::string re = s.str();
+	cout<<"file-content: "<<re<<endl;
+	in.close();
+	return re;
 }

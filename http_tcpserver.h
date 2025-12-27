@@ -22,7 +22,7 @@ namespace http{
 		private:
 			int m_sock;
 			char m_buff[5024];
-			std::set<std::string> m_paths={"/index.html","/home.html"};
+			std::set<std::string> m_paths={"/index.html","/home.html","/"};
 			struct sockaddr_in m_address;
 			void assign(std::string address,int port);
 			int create_sock();
