@@ -24,7 +24,6 @@ tcpserver::tcpserver(std::string ip_address, int port){
 	if(listen(m_sock,5)<0){
 		perror("listen");
 		cerr<<"Error: Listen Unsuccessful"<<endl;
-		exit(EXIT_FAILURE);
 	}
 
 	while(true){
@@ -60,21 +59,28 @@ void tcpserver::loop(){
 	if(lsock<0){
 		perror("accept");
 		cerr<<"Error: Accept Problem."<<endl;
-		exit(EXIT_FAILURE);
 	}
 
 	ssize_t i = recv(lsock,m_buff,sizeof(m_buff),0);
 	if(i<0){
 		perror("recv");
 		cerr<<"Error: Recv Problem"<<endl;
-		exit(EXIT_FAILURE);
 	}
 	m_buff[i]='\0';
 	
 	std::string msg=process(m_buff);
-	if(msg == ""){
-		perror("Request");
-		cerr<<"Error 400"<<endl;
+	if(msg == "."){
+		close(lsock);
+		return;
+	}
+	if(msg == "I"){
+		std::cerr<<"Bad request received."<<std::endl;
+		m_msg="HTTP/1.1 400 Bad Request\r\ncontent-Type: text/html\r\ncontent-Length: 58\r\n\r\n<h1>400 Bad Reqest</h1><p>your request is invalid.</p>";
+		i=send(lsock,m_msg.c_str(),m_msg.size(),0);
+		if(i<=0){
+			std::cerr<<"Error: Send Problem."<<std::endl;
+		}
+		
 	}
 	
 	m_msg="HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: ";
@@ -82,19 +88,17 @@ void tcpserver::loop(){
 	msg = "\r\n\r\n"+msg;
 	msg = std::to_string(size)+msg;
 	m_msg+=msg;
-	std::cout<<m_msg<<std::endl;	
 	i = send(lsock,m_msg.c_str(),m_msg.size(),0);
 	if(i<=0){
 		perror("send");
 		cerr<<"Error: Send Problem"<<endl;
-		exit(EXIT_FAILURE);
 	}
 
-	cout<<m_buff<<endl;
 
 	memset(m_buff,0,sizeof(m_buff));
 	close(lsock);
 }
+
 
 std::string tcpserver::process(const std::string &msg){
 	std::string method="",path="";
@@ -103,9 +107,7 @@ std::string tcpserver::process(const std::string &msg){
 		method+=msg[i];
 		++i;
 	}
-	//cout<<"Method: "<<method<<endl;
 	if(method!="GET"){
-		perror("METHOD");
 		cerr<<"Error:  Method is not GET."<<endl;
 	}
 
@@ -114,21 +116,24 @@ std::string tcpserver::process(const std::string &msg){
 		path+=msg[i];
 		++i;
 	}
-	//cout<<"Path: "<<path<<endl;
+	if(path == "/favicon.ico"){
+		return ".";
+	}
 	if(m_paths.find(path) == m_paths.end()){
-		perror("PATH");
-		cerr<<"Invalid path."<<endl;
-		return "";
+		std::cerr<<"Invalid path: "<<path<<std::endl;
+		return "I";
 	}
 	return GET(path);
 }
 
 std::string tcpserver::GET(const std::string &msg){
-	ifstream in("path_file/index.html");
+	std::string file = "path_file";
+	if(msg=="/")file+="/index.html";
+	else file+=m_paths[msg];
+	ifstream in(file);
 	std::stringstream s;
 	s<<in.rdbuf();
 	std::string re = s.str();
-	cout<<"file-content: "<<re<<endl;
 	in.close();
 	return re;
 }
