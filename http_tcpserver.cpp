@@ -4,6 +4,7 @@
 #include<cstring>
 
 #include"http_tcpserver.h"
+#include"http_process.h"
 
 using namespace std;
 using namespace http;
@@ -30,10 +31,6 @@ tcpserver::tcpserver(std::string ip_address, int port){
 		loop();
 	}
 
-}
-tcpserver::~tcpserver(){
-	close(m_sock);
-	//close(m_lsock);
 }
 
 void tcpserver::assign(std::string address,int port){
@@ -68,14 +65,14 @@ void tcpserver::loop(){
 	}
 	m_buff[i]='\0';
 	
-	std::string msg=process(m_buff);
+	std::string msg=process(m_buff,m_paths);
 	if(msg == "."){
 		close(lsock);
 		return;
 	}
 	if(msg == "I"){
-		std::cerr<<"Bad request received."<<std::endl;
-		m_msg="HTTP/1.1 400 Bad Request\r\ncontent-Type: text/html\r\ncontent-Length: 58\r\n\r\n<h1>400 Bad Reqest</h1><p>your request is invalid.</p>";
+		std::cerr<<"File not available."<<std::endl;
+		m_msg="HTTP/1.1 404 Not Found\r\ncontent-Type: text/html\r\ncontent-Length: 58\r\n\r\n<h1>404 Not Found</h1><p>Pls check url,file not found.</p>";
 		i=send(lsock,m_msg.c_str(),m_msg.size(),0);
 		if(i<=0){
 			std::cerr<<"Error: Send Problem."<<std::endl;
@@ -100,7 +97,7 @@ void tcpserver::loop(){
 }
 
 
-std::string tcpserver::process(const std::string &msg){
+/*std::string tcpserver::process(const std::string &msg){
 	std::string method="",path="";
 	int i=0;
 	while(msg[i]!=' '){
@@ -136,4 +133,4 @@ std::string tcpserver::GET(const std::string &msg){
 	std::string re = s.str();
 	in.close();
 	return re;
-}
+}*/

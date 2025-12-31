@@ -16,7 +16,6 @@ namespace http{
 	class tcpserver{
 		public:
 			tcpserver(std::string ip_address, int port);
-			~tcpserver();
 			
 			
 		private:
@@ -27,8 +26,8 @@ namespace http{
 			void assign(std::string address,int port);
 			int create_sock();
 			std::string m_msg;
-			std::string process(const std::string& msg);
-			std::string GET(const std::string& msg);
+			//std::string process(const std::string& msg);
+			//std::string GET(const std::string& msg);
 			void loop();
 	};
 }
