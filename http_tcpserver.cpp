@@ -64,22 +64,13 @@ void tcpserver::loop(){
 		cerr<<"Error: Recv Problem"<<endl;
 	}
 	m_buff[i]='\0';
-	
+	//std::cout<<m_buff<<std::endl;	
 	std::string msg=process(m_buff,m_paths);
 	if(msg == "."){
 		close(lsock);
 		return;
 	}
-	if(msg == "I"){
-		std::cerr<<"File not available."<<std::endl;
-		m_msg="HTTP/1.1 404 Not Found\r\ncontent-Type: text/html\r\ncontent-Length: 58\r\n\r\n<h1>404 Not Found</h1><p>Pls check url,file not found.</p>";
-		i=send(lsock,m_msg.c_str(),m_msg.size(),0);
-		if(i<=0){
-			std::cerr<<"Error: Send Problem."<<std::endl;
-		}
-		
-	}
-	
+
 	m_msg="HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: ";
 	size_t size = msg.size();
 	msg = "\r\n\r\n"+msg;
@@ -95,42 +86,3 @@ void tcpserver::loop(){
 	memset(m_buff,0,sizeof(m_buff));
 	close(lsock);
 }
-
-
-/*std::string tcpserver::process(const std::string &msg){
-	std::string method="",path="";
-	int i=0;
-	while(msg[i]!=' '){
-		method+=msg[i];
-		++i;
-	}
-	if(method!="GET"){
-		cerr<<"Error:  Method is not GET."<<endl;
-	}
-
-	i+=1;
-	while(msg[i]!=' '){
-		path+=msg[i];
-		++i;
-	}
-	if(path == "/favicon.ico"){
-		return ".";
-	}
-	if(m_paths.find(path) == m_paths.end()){
-		std::cerr<<"Invalid path: "<<path<<std::endl;
-		return "I";
-	}
-	return GET(path);
-}
-
-std::string tcpserver::GET(const std::string &msg){
-	std::string file = "path_file";
-	if(msg=="/")file+="/index.html";
-	else file+=m_paths[msg];
-	ifstream in(file);
-	std::stringstream s;
-	s<<in.rdbuf();
-	std::string re = s.str();
-	in.close();
-	return re;
-}*/

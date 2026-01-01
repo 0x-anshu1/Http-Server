@@ -21,7 +21,7 @@ namespace http{
 		private:
 			int m_sock;
 			char m_buff[5024];
-			std::unordered_map<std::string,std::string> m_paths={{"/","/index.html"},{"/index","/index.html"},{"/favicon.ico"," "}};
+			std::unordered_map<std::string,std::string> m_paths={{"/","/index.html"},{"/index","/index.html"},{"/favicon.ico"," "},{"405","/405.html"},{"404","/404.html"},{"400","/400.html"}};
 			struct sockaddr_in m_address;
 			void assign(std::string address,int port);
 			int create_sock();
