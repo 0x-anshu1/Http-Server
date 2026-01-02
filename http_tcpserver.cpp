@@ -2,6 +2,7 @@
 #include<string>
 #include<sstream>
 #include<cstring>
+#include<utility>
 
 #include"http_tcpserver.h"
 #include"http_process.h"
@@ -65,17 +66,33 @@ void tcpserver::loop(){
 	}
 	m_buff[i]='\0';
 	//std::cout<<m_buff<<std::endl;	
-	std::string msg=process(m_buff,m_paths);
-	if(msg == "."){
+	std::pair<int,std::string> msg=process(m_buff,m_paths);
+	if(msg.second== "."){
 		close(lsock);
 		return;
 	}
-
-	m_msg="HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: ";
-	size_t size = msg.size();
-	msg = "\r\n\r\n"+msg;
-	msg = std::to_string(size)+msg;
-	m_msg+=msg;
+	
+	switch(msg.first){
+		case 400:
+			m_msg="HTTP/1.1 400 BAD REQUEST\r\nContent-Type: text/html\r\nContent-Length: ";
+			break;
+		case 404:
+			m_msg="HTTP/1.1 404 NOT FOUND\r\nContent-Type: text/html\r\nContent-Length: ";
+			break;
+		case 405:
+			m_msg="HTTP/1.1 405 METHOD NOT ALLOWED\r\nContent-Type: text/html\r\nContent-Length: ";
+			break;
+		case 500:
+			m_msg="HTTP/1.1 500 INTERNAL SERVER ERROR\r\nContent-Type: text/html\r\nContent-Length: ";
+			break;
+		default:
+			m_msg="HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: ";
+			break;
+	}
+	size_t size = msg.second.size();
+	msg.second = "\r\n\r\n"+msg.second;
+	msg.second = std::to_string(size)+msg.second;
+	m_msg+=msg.second;
 	i = send(lsock,m_msg.c_str(),m_msg.size(),0);
 	if(i<=0){
 		perror("send");
