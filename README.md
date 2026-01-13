@@ -13,7 +13,6 @@ Features:
 
 ![alt text](image.png)
 
----
 
 # How to install and run this project
 ## Requirements: Linux or wsl, g++ with c++17 support
@@ -30,12 +29,12 @@ g++ main.cpp http_tcpserver.cpp http_process.cc -o main
 ```
 note: The server will work on http://127.0.0.1:8000/ on the same machine.
 
+
 # Example test requests
 1. index page: http://127.0.0.1:8000/ 
 2. ERROR 404: http://127.0.0.1:8000/i 
 3. ERROR 405(note: This command should run in a different terminal.):  curl --json '{"hello"}' http://127.0.0.1:8000/
 
----
 
 # Limitations
 1. No multithreading
@@ -43,12 +42,12 @@ note: The server will work on http://127.0.0.1:8000/ on the same machine.
 3. Only GET request allowed
 4. No keep-alive connections
 
----
 
 # Future Roadmap
 1. Add MIME type detection
 2. POST method handling
 3. Improve error handling
+
 
 # Structure
 ```bash
@@ -69,7 +68,6 @@ note: The server will work on http://127.0.0.1:8000/ on the same machine.
         └── 405.html
 ```
 
----
 
 # LICENSE
 This project is licensed under the [MIT License](LICENSE) - see the LICENSE file for details.
