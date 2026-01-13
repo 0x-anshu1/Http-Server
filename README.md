@@ -31,6 +31,9 @@ note: The server will work on http://127.0.0.1:8000/ on the same machine.
 
 # Example test requests
 1. ```bash 
-    http://127.0.0.1:8000/ 
-```
-This goes to index page.
+    http://127.0.0.1:8000/ ```
+
+    This goes to index page.
+2. ```bash
+    http://127.0.0.1:8000/i ```
+    This will result in error 404.
