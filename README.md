@@ -2,15 +2,14 @@
 
 ## A functioning http-server built in c++ and linux sockets, process GET request to server static file.
 
-This is a project that was built in order to understand HTTP protocol and working of an HTTP-server. This project is built without any use of external HTTP-libraries or framework and only linux sockets(sys/socket.h,unistd.h etc..) are used.
+This project was developed to gain a deep understanding of the HTTP protocol and the internal mechanics of an HTTP server. It was built from scratch without external libraries or frameworks, relying solely on Linux sockets (such as <sys/socket.h> and <unistd.h>).
 Features:
-* HTTP request parsing
-* Static file serving
-* error handling for 400,404,405,500
-* File serving: >first packet conatins HTTP header.
-                >following packets stream raw file bytes.
-* Hash table based routing for O(1) look up
-* Binary file support
+* HTTP Request Parsing: Efficiently handles and interprets incoming requests.
+* Static File Serving: Supports serving various file types directly from the server.
+* Binary File Support: Capable of handling non-text formats (images, executables, etc.).
+* Streaming Architecture: The first packet contains the HTTP header, followed by a stream of raw file bytes for efficient delivery.
+* Optimized Routing: Implements hash table-based routing for $O(1)$ lookup performance.
+* Robust Error Handling: Built-in support for 400, 404, 405, and 500 status codes.
 
 ![alt text](image.png)
 
@@ -54,18 +53,23 @@ note: The server will work on http://127.0.0.1:8000/ on the same machine.
 # Structure
 ```bash
 .
-|-- http_tcpserver.h
-|-- http_process.h
-|-- http_tcpserver.cpp
-|-- http_process.cc
-|-- main.cpp
-|-- README.md
-|-- image.png
-|-- LICENSE
-|-- path_file/
-    |-- index.html
-    |-- error/
-        |-- 400.html
-        |-- 404.html
-        |-- 405.html
+├── http_tcpserver.h
+├── http_process.h
+├── http_tcpserver.cpp
+├── http_process.cc
+├── main.cpp
+├── README.md
+├── image.png
+├── LICENSE
+└── path_file/
+    ├── index.html
+    └── error/
+        ├── 400.html
+        ├── 404.html
+        └── 405.html
 ```
+
+---
+
+# LICENSE
+This project is licensed under the [MIT License](LICENSE) - see the LICENSE file for details.
