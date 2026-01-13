@@ -14,6 +14,8 @@ Features:
 
 ![alt text](image.png)
 
+---
+
 # How to install and run this project
 ## Requirements: Linux or wsl, g++ with c++17 support
 
@@ -30,10 +32,40 @@ g++ main.cpp http_tcpserver.cpp http_process.cc -o main
 note: The server will work on http://127.0.0.1:8000/ on the same machine.
 
 # Example test requests
-1. ```bash 
-    http://127.0.0.1:8000/ ```
+1. index page: http://127.0.0.1:8000/ 
+2. ERROR 404: http://127.0.0.1:8000/i 
+3. ERROR 405(note: This command should run in a different terminal.):  curl --json '{"hello"}' http://127.0.0.1:8000/
 
-    This goes to index page.
-2. ```bash
-    http://127.0.0.1:8000/i ```
-    This will result in error 404.
+---
+
+# Limitations
+1. No multithreading
+2. NO MIME type detection
+3. Only GET request allowed
+4. No keep-alive connections
+
+---
+
+# Future Roadmap
+1. Add MIME type detection
+2. POST method handling
+3. Improve error handling
+
+# Structure
+```bash
+.
+|-- http_tcpserver.h
+|-- http_process.h
+|-- http_tcpserver.cpp
+|-- http_process.cc
+|-- main.cpp
+|-- README.md
+|-- image.png
+|-- LICENSE
+|-- path_file/
+    |-- index.html
+    |-- error/
+        |-- 400.html
+        |-- 404.html
+        |-- 405.html
+```
